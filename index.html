@@ -1,0 +1,4131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes"/>
+  <title>DuraProtect - Sécurité Intelligente</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Loading Screen */
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #111;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+      transition: opacity 1s ease-out;
+    }
+    
+    .loading-content {
+      position: relative;
+      width: 300px;
+      height: 300px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .loading-logo {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyLDEyQzEyLDEyIDIwLjUsMTQuNSAxOSwxOUgxMUMxMC40NSwxOSAxMCwxOC41NSAxMCwxOFYxMkMxMCwxMS40NSAxMC40NSwxMSAxMSwxMUgxM1Y5SDExQzkuMzQsOSA4LDEwLjM0IDgsMTJWMTlDNywxOSA1LjY2LDE5IDUsMTlDNy4zMywxOSA2LDE2LjUgNiwxMkM2LDguNSA4LjUsNiAxMiw2QzE1LjUsNiAxOCw4LjUgMTgsMTJDMjEsMTIgMjQsMTEgMjQsMTFDMjQsMTEgMjEsMTIgMTgsMTJIMTJWMTlDMTIsMTkuMzMgMTIsMjAuNjcgMTIsMjJDNiwyMSA0LDE5IDQsMTlDNCwxOSAzLDIxIDMsMjFDMiwyMSAyLDIwIDIsMjBDMiwxNi41IDQuNSwxNCA3LDE0QzcuMDksMTQgNy4xOCwxNCA3LjI3LDE0QzYuNSwxMy4zNCA2LDEyLjUgNiwxMS41QzYsOS41NyA3LjU3LDggOS41LDhDMTEuNDMsOCAxMyw5LjU3IDEzLDExLjVDMTMsMTIuNSAxMi41LDEzLjM0IDExLjczLDE0QzExLjgyLDE0IDEyLDE0IDEyLDE0VjEyWiIgZmlsbD0iIzAwYjRkOCIvPjwvc3ZnPg==') no-repeat center;
+      background-size: contain;
+      animation: pulse 2s infinite;
+    }
+    
+    .loading-ring {
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border: 3px solid transparent;
+      border-radius: 50%;
+      border-top-color: #00b4d8;
+      animation: spin 2s linear infinite;
+    }
+    
+    .loading-ring:nth-child(2) {
+      border-top-color: #0077b6;
+      animation-delay: 0.3s;
+    }
+    
+    .loading-ring:nth-child(3) {
+      border-top-color: #2c5282;
+      animation-delay: 0.6s;
+    }
+    
+    .loading-text {
+      color: white;
+      font-size: 1.5rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-top: 2rem;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .loading-subtext {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+    
+    .loading-bar {
+      width: 300px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      margin-top: 2rem;
+      overflow: hidden;
+      position: relative;
+      border-radius: 2px;
+    }
+    
+    .loading-progress {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00b4d8, #0077b6);
+      transition: width 0.3s ease;
+      border-radius: 2px;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 1; }
+      100% { transform: scale(0.95); opacity: 0.8; }
+    }
+
+    /* Reset and base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      font-family: 'Poppins', sans-serif;
+      transition: background 0.5s, color 0.5s;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+    
+    body.light {
+      background: #f4f4f4;
+      color: #222;
+    }
+    body.dark {
+      background: #111;
+      color: #eee;
+    }
+    
+    /* Canvas Background */
+    canvas#animated-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      opacity: 0.5;
+    }
+    
+    /* Navigation */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(0, 0, 0, 0.2);
+      position: fixed;
+      width: 100%;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.5s ease;
+    }
+    
+    body.light nav {
+      background: rgba(255, 255, 255, 0.8);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    nav.scrolled {
+      background: rgba(0, 0, 0, 0.9);
+      padding: 0.8rem 2rem;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    body.light nav.scrolled {
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    nav .logo {
+      font-weight: bold;
+      font-size: 1.8rem;
+      font-weight: 700;
+  
+      transition: all 0.5s ease;
+    }
+    
+    nav ul {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    
+    nav ul li a {
+      text-decoration: none;
+      font-size: 1rem;
+      font-weight: 500;
+      color: inherit;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 0.5rem 0;
+    }
+    
+    nav ul li a:hover {
+      color: #00b4d8;
+    }
+    
+    nav ul li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #00b4d8;
+      transition: width 0.3s ease;
+    }
+    
+    nav ul li a:hover::after {
+      width: 100%;
+    }
+    
+    .toggle-mode {
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: white;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    body.light .toggle-mode {
+      color: #222;
+      background: rgba(0, 0, 0, 0.05);
+    }
+    
+    .toggle-mode:hover {
+      background: rgba(0, 180, 216, 0.2);
+    }
+    
+    body.light .toggle-mode:hover {
+      background: rgba(0, 180, 216, 0.1);
+    }
+
+    /* Logo and Stats Section */
+    .logo-stats-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 80px;
+      padding: 2rem;
+      flex-wrap: wrap;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .stats-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 0 2rem;
+    }
+    
+    .stat-item {
+      text-align: center;
+      margin: 1rem 0;
+      min-width: 120px;
+      perspective: 1000px;
+    }
+    
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #00b4d8;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 0 10px rgba(0, 180, 216, 0.5);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+    
+    body.light .stat-number {
+      color: #2c5282;
+      text-shadow: 0 0 10px rgba(44, 82, 130, 0.3);
+    }
+    
+    .stat-label {
+      font-size: 1rem;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 500;
+    }
+    
+    body.light .stat-label {
+      color: #666;
+    }
+    
+    #l1 {
+      width: 250px;
+      height: 250px;
+      margin: 0 2rem;
+      filter: drop-shadow(0 0 20px rgba(0, 180, 216, 0.5));
+      transform-style: preserve-3d;
+      animation: float 6s ease-in-out infinite;
+    }
+    
+    body.light #l1 {
+      filter: drop-shadow(0 0 20px rgba(44, 82, 130, 0.3));
+    }
+    
+    body.light #l1 {
+      content: url("l2.png");
+    }
+    
+    .container {
+      display: flex;
+      border-radius: 40px;
+      backdrop-filter: blur(20px);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 2rem;
+      transform-style: preserve-3d;
+      transition: all 0.5s ease;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      animation: fadeInUp 1s ease-out;
+    }
+    
+    body.light .container {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    }
+    
+    .container:hover {
+      transform: perspective(1000px) rotateX(5deg) rotateY(5deg) translateZ(20px);
+      box-shadow: 0 30px 70px rgba(0, 180, 216, 0.4);
+    }
+
+    /* Professional Header Styles */
+    .header-container {
+      text-align: center;
+      margin: 3rem auto;
+      max-width: 900px;
+      padding: 0 2rem;
+      transform-style: preserve-3d;
+    }
+    
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      margin: 0;
+      line-height: 1.2;
+      color: #2c5282;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      overflow: hidden;
+      text-align: center;
+      text-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      perspective: 1000px;
+    }
+    
+    body.dark h1 {
+      color: #00b4d8;
+      text-shadow: 0 5px 15px rgba(0, 180, 216, 0.3);
+    }
+    
+    small {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: #4a5568;
+      margin-top: 1.5rem;
+      letter-spacing: 1px;
+      line-height: 1.6;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: center;
+    }
+    
+    body.dark small {
+      color: #aaa;
+    }
+    
+    .char {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(20px) rotateX(90deg);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), 
+                 transform 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                 color 0.3s ease;
+    }
+    
+    .char.visible {
+      opacity: 1;
+      transform: translateY(0) rotateX(0);
+    }
+
+    /* Engagements Section */
+    .engagements-container {
+      max-width: 1200px;
+      margin: 4rem auto;
+      padding: 0 2rem;
+      text-align: center;
+    }
+    
+    .section-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 3rem;
+      color: #00b4d8;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      position: relative;
+      display: inline-block;
+      text-align: center;
+      perspective: 1000px;
+    }
+    
+    body.light .section-title {
+      color: #2c5282;
+    }
+    
+    .section-title::after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, #00b4d8, #0077b6);
+      border-radius: 2px;
+    }
+    
+    .engagements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+      perspective: 1000px;
+    }
+    
+    .engagement-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2.5rem;
+      text-align: center;
+      transition: all 0.5s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      width: 100%;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    body.dark .engagement-card {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    body.light .engagement-card {
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    body.dark .engagement-card {
+      background: rgba(30, 30, 30, 0.6);
+    }
+    
+    body.light .engagement-card {
+      background: rgba(255, 255, 255, 0.8);
+    }
+    
+    .engagement-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.1), rgba(0, 119, 182, 0.1));
+      z-index: -1;
+      transition: all 0.5s ease;
+    }
+    
+    .engagement-card:hover {
+      transform: translateY(-10px) rotateX(5deg) rotateY(5deg) scale(1.05);
+      box-shadow: 0 20px 40px rgba(0, 180, 216, 0.3);
+    }
+    
+    .engagement-card:hover::before {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.2), rgba(0, 119, 182, 0.2));
+    }
+    
+    .engagement-icon {
+      font-size: 3rem;
+      color: #00b4d8;
+      margin-bottom: 1.5rem;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+      display: inline-block;
+    }
+    
+    body.light .engagement-icon {
+      color: #2c5282;
+    }
+    
+    .engagement-card:hover .engagement-icon {
+      transform: rotateY(180deg) scale(1.2);
+      color: white;
+    }
+    
+    .engagement-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: #00b4d8;
+      transform: translateZ(30px);
+    }
+    
+    body.light .engagement-title {
+      color: #2c5282;
+    }
+    
+    .engagement-text {
+      color: #aaa;
+      line-height: 1.6;
+      transform: translateZ(20px);
+      font-weight: 300;
+    }
+    
+    body.light .engagement-text {
+      color: #666;
+    }
+    
+    /* Enhanced Contact Button */
+    .contact-section {
+      text-align: center;
+      margin: 4rem 0;
+    }
+    
+    .contact-btn {
+      position: relative;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      font-weight: 600;
+      padding: 1rem 2.5rem;
+      font-size: 1.2rem;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 5px 25px rgba(0, 180, 216, 0.4);
+      transition: all 0.3s ease;
+      overflow: hidden;
+      z-index: 1;
+      transform-style: preserve-3d;
+    }
+    
+    .contact-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0077b6, #00b4d8);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 50px;
+    }
+    
+    .contact-btn:hover {
+      transform: translateY(-5px) rotateX(10deg);
+      box-shadow: 0 10px 30px rgba(0, 180, 216, 0.6);
+    }
+    
+    .contact-btn:hover::before {
+      opacity: 1;
+    }
+    
+    .contact-btn:active {
+      transform: translateY(1px);
+    }
+    
+    /* Animation for engagement cards */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .engagement-card {
+      opacity: 0;
+      animation: fadeInUp 0.6s forwards;
+    }
+    
+    .engagement-card:nth-child(1) { animation-delay: 0.1s; }
+    .engagement-card:nth-child(2) { animation-delay: 0.3s; }
+    .engagement-card:nth-child(3) { animation-delay: 0.5s; }
+    .engagement-card:nth-child(4) { animation-delay: 0.7s; }
+    
+    /* Chatbot styling */
+    .chatbot-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 350px;
+      z-index: 1000;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+    }
+    
+    .chatbot {
+      display: flex;
+      flex-direction: column;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      height: 500px;
+      transform: translateY(100%) rotateX(90deg);
+      opacity: 0;
+      pointer-events: none;
+      position: fixed;
+      bottom: 100px;
+      right: 20px;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      transform-style: preserve-3d;
+    }
+    
+    .chatbot-visible {
+      transform: translateY(0) rotateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    
+    body.dark .chatbot {
+      background: #222;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .chatbot-header {
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .chatbot-title {
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+    
+    .chatbot-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    
+    .chatbot-close:hover {
+      transform: rotate(90deg);
+    }
+    
+    .chatbot-messages {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .message {
+      max-width: 80%;
+      padding: 10px 15px;
+      border-radius: 18px;
+      line-height: 1.4;
+      transform-style: preserve-3d;
+      transition: all 0.3s ease;
+      transform-origin: left bottom;
+      animation: messageIn 0.3s ease-out forwards;
+    }
+    
+    @keyframes messageIn {
+      from {
+        transform: scale(0) translateY(20px);
+        opacity: 0;
+      }
+      to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .bot-message {
+      background: #f0f0f0;
+      align-self: flex-start;
+      border-bottom-left-radius: 5px;
+      color: #333;
+    }
+    
+    body.dark .bot-message {
+      background: #333;
+      color: #eee;
+    }
+    
+    .user-message {
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      align-self: flex-end;
+      border-bottom-right-radius: 5px;
+    }
+    
+    .chatbot-input {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #eee;
+    }
+    
+    body.dark .chatbot-input {
+      border-top: 1px solid #444;
+    }
+    
+    .chatbot-input input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+    
+    body.dark .chatbot-input input {
+      background: #333;
+      border-color: #444;
+      color: #eee;
+    }
+    
+    .chatbot-input button {
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      border: none;
+      border-radius: 20px;
+      padding: 0 20px;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .chatbot-input button:hover {
+      transform: scale(1.05);
+    }
+    
+    .chatbot-trigger {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 5px 20px rgba(0, 180, 216, 0.4);
+      z-index: 999;
+      transition: all 0.3s ease;
+      transform-style: preserve-3d;
+    }
+    
+    .chatbot-trigger:hover {
+      transform: translateY(-5px) rotateY(10deg);
+      box-shadow: 0 10px 30px rgba(0, 180, 216, 0.6);
+    }
+    
+    .chatbot-trigger i {
+      font-size: 1.5rem;
+    }
+    
+    /* Floating Button Styles */
+    .floating-btn-container {
+      position: relative;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin: 3rem 0;
+      z-index: 10;
+      perspective: 1000px;
+    }
+    
+    .floating-btn {
+      width: 200px;
+      height: 80px;
+      border-radius: 40px;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      border: none;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 180, 216, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 10px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      transform-style: preserve-3d;
+      animation: pulse 2s infinite;
+    }
+    
+    .floating-btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0077b6, #00b4d8);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 40px;
+    }
+    
+    .floating-btn:hover {
+      transform: translateY(-10px) rotateX(10deg);
+      box-shadow: 0 15px 40px rgba(0, 180, 216, 0.6);
+      animation: none;
+    }
+    
+    .floating-btn:hover::after {
+      opacity: 1;
+    }
+    
+    .contact-us-btn {
+      width: 200px;
+      height: 60px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      border: none;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(0, 180, 216, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 10px;
+      margin: 2rem auto;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+    }
+    
+    .contact-us-btn i {
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+    
+    .contact-us-btn::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #0077b6, #00b4d8);
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 30px;
+    }
+    
+    .contact-us-btn:hover {
+      transform: translateY(-5px) rotateX(5deg);
+      box-shadow: 0 15px 40px rgba(0, 180, 216, 0.6);
+    }
+    
+    .contact-us-btn:hover::after {
+      opacity: 1;
+    }
+    
+    @keyframes wave {
+      0% { transform: rotate(45deg) translate(-10%, -10%); }
+      100% { transform: rotate(45deg) translate(10%, 10%); }
+    }
+    
+    /* Reasons Panel */
+    .reasons-panel {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0) rotateX(90deg);
+      width: 80%;
+      max-width: 800px;
+      background: rgba(30, 30, 30, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      opacity: 0;
+      backdrop-filter: blur(20px);
+      transform-style: preserve-3d;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    body.light .reasons-panel {
+      background: rgba(255, 255, 255, 0.95);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .reasons-panel.active {
+      transform: translate(-50%, -50%) scale(1) rotateX(0);
+      opacity: 1;
+    }
+    
+    .reasons-panel h2 {
+      color: #00b4d8;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2rem;
+      transform: translateZ(40px);
+    }
+    
+    body.light .reasons-panel h2 {
+      color: #2c5282;
+    }
+    
+    .reason-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      padding: 20px;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.05);
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+    
+    body.light .reason-item {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    
+    .reason-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(10px) rotateY(5deg);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    body.light .reason-item:hover {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    
+    .reason-icon {
+      font-size: 2rem;
+      color: #00b4d8;
+      margin-right: 20px;
+      min-width: 50px;
+      text-align: center;
+      transform: translateZ(30px);
+    }
+    
+    body.light .reason-icon {
+      color: #2c5282;
+    }
+    
+    .reason-content h3 {
+      color: white;
+      margin-bottom: 10px;
+      font-size: 1.3rem;
+      transform: translateZ(20px);
+    }
+    
+    body.light .reason-content h3 {
+      color: #222;
+    }
+    
+    .reason-content p {
+      color: #aaa;
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.6;
+      transform: translateZ(10px);
+    }
+    
+    body.light .reason-content p {
+      color: #666;
+    }
+    
+    .close-panel {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .close-panel:hover {
+      transform: rotate(90deg);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    /* Overlay */
+    .panel-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 999;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      backdrop-filter: blur(5px);
+    }
+    
+    .panel-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    /* Google Maps Container */
+    .map-container {
+      width: 100%;
+      height: 500px;
+      margin: 50px auto;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+      position: relative;
+    }
+    
+    .map-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.1), rgba(0, 119, 182, 0.1));
+      z-index: 1;
+      pointer-events: none;
+    }
+    
+    .map-container:hover {
+      transform: perspective(1000px) rotateX(5deg) rotateY(0deg) translateZ(20px);
+      box-shadow: 0 20px 50px rgba(0, 180, 216, 0.3);
+    }
+    
+    .map-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+    
+    /* Contact Section */
+    .contact-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 2rem;
+      margin-top: 2rem;
+      perspective: 1000px;
+    }
+    
+    .contact-info {
+      flex: 1;
+      min-width: 300px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 2.5rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .contact-info:hover {
+      transform: perspective(1000px) rotateX(5deg) rotateY(0deg) translateZ(20px);
+      box-shadow: 0 20px 50px rgba(0, 180, 216, 0.3);
+    }
+    
+    body.light .contact-info {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-method {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 2rem;
+      transform-style: preserve-3d;
+    }
+    
+    .contact-icon {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.5rem;
+      margin-right: 1.5rem;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+      flex-shrink: 0;
+    }
+    
+    .contact-icon:hover {
+      transform: rotateY(180deg) scale(1.1);
+    }
+    
+    .contact-details h3 {
+      color: #00b4d8;
+      margin-bottom: 0.5rem;
+      font-size: 1.3rem;
+      transform: translateZ(30px);
+    }
+    
+    body.light .contact-details h3 {
+      color: #2c5282;
+    }
+    
+    body.dark .contact-details p {
+      color: #ccc;
+      transform: translateZ(20px);
+    }
+    
+    body.light .contact-details p {
+      color: #555;
+    }
+    
+    .social-links {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      transform-style: preserve-3d;
+    }
+    
+    .social-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00b4d8;
+      font-size: 1.3rem;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    body.light .social-icon {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .social-icon:hover {
+      background: #00b4d8;
+      color: white;
+      transform: translateY(-5px) rotateY(180deg);
+      box-shadow: 0 5px 15px rgba(0, 180, 216, 0.4);
+    }
+    
+    .contact-form {
+      flex: 1;
+      min-width: 300px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 2.5rem;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .contact-form:hover {
+      transform: perspective(1000px) rotateX(5deg) rotateY(0deg) translateZ(20px);
+      box-shadow: 0 20px 50px rgba(0, 180, 216, 0.3);
+    }
+    
+    body.light .contact-form {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-form input,
+    .contact-form textarea {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 1.5rem;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    body.light .contact-form input,
+    body.light .contact-form textarea {
+      background: rgba(255, 255, 255, 0.8);
+      color: #333;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-form input:focus,
+    .contact-form textarea:focus {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.3);
+      transform: scale(1.02) translateZ(20px);
+    }
+    
+    textarea {
+      height: 150px;
+      resize: none;
+    }
+    
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+      box-shadow: 0 5px 15px rgba(0, 180, 216, 0.3);
+    }
+    
+    .submit-btn:hover {
+      transform: translateY(-5px) rotateX(10deg);
+      box-shadow: 0 10px 25px rgba(0, 180, 216, 0.5);
+    }
+    
+    /* About Section Styles */
+    .about-section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.05) 0%, rgba(0, 119, 182, 0.05) 100%);
+      display: none;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    
+    body.dark .about-section {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.05) 0%, rgba(0, 119, 182, 0.05) 100%);
+    }
+    
+    body.light .about-section {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.03) 0%, rgba(0, 119, 182, 0.03) 100%);
+    }
+    
+    .about-section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .about-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .about-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    
+    .about-title {
+      font-size: 3rem;
+      font-weight: 800;
+      color: #00b4d8;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 20px;
+      position: relative;
+      display: inline-block;
+    }
+    
+    body.light .about-title {
+      color: #2c5282;
+    }
+    
+    .title-decoration {
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, #00b4d8, #0077b6);
+      margin: 0 auto;
+      border-radius: 2px;
+    }
+    
+    .about-text {
+      max-width: 800px;
+      margin: 0 auto 60px;
+      text-align: center;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #555;
+    }
+    
+    body.dark .about-text {
+      color: #eee;
+    }
+    
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    
+    .value-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.5s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transform: translateY(30px);
+      opacity: 0;
+      transform-style: preserve-3d;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    body.light .value-card {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .value-card.active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .value-card:hover {
+      transform: perspective(1000px) rotateX(5deg) rotateY(0deg) translateZ(20px) !important;
+      box-shadow: 0 20px 50px rgba(0, 180, 216, 0.3);
+    }
+    
+    .value-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+      box-shadow: 0 10px 20px rgba(0, 180, 216, 0.3);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+    
+    .value-card:hover .value-icon {
+      transform: rotateY(180deg) scale(1.1);
+    }
+    
+    .value-title {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      color: #00b4d8;
+      transform: translateZ(30px);
+    }
+    
+    body.light .value-title {
+      color: #2c5282;
+    }
+    
+    .value-text {
+      color: #777;
+      line-height: 1.7;
+      transform: translateZ(20px);
+    }
+    
+    body.dark .value-text {
+      color: #ccc;
+    }
+    
+    /* Home Content Wrapper */
+    .home-content {
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    
+    .home-content.hidden {
+      opacity: 0;
+      transform: translateY(-50px);
+      pointer-events: none;
+      height: 0;
+      overflow: hidden;
+    }
+    
+    nav ul li a.active {
+      color: #00b4d8;
+      font-weight: 600;
+    }
+    
+    nav ul li a.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #00b4d8;
+      animation: underline 0.3s ease-out;
+    }
+    
+    @keyframes underline {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+    
+    /* Services Section Styles */
+    .services-section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.05) 0%, rgba(0, 119, 182, 0.05) 100%);
+      display: none;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    
+    body.dark .services-section {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.05) 0%, rgba(0, 119, 182, 0.05) 100%);
+    }
+    
+    body.light .services-section {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.03) 0%, rgba(0, 119, 182, 0.03) 100%);
+    }
+    
+    .services-section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .services-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .services-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .services-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #00b4d8;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+    
+    body.light .services-title {
+      color: #2c5282;
+    }
+    
+    .services-intro {
+      max-width: 800px;
+      margin: 0 auto 60px;
+      text-align: center;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #555;
+    }
+    
+    body.dark .services-intro {
+      color: #eee;
+    }
+    
+    .services-intro strong {
+      color: #00b4d8;
+      font-weight: 600;
+    }
+    
+    body.light .services-intro strong {
+      color: #2c5282;
+    }
+    
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 30px;
+    }
+    
+    .service-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.5s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transform: translateY(30px);
+      opacity: 0;
+      transform-style: preserve-3d;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    body.light .service-card {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .service-card.active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .service-card:hover {
+      transform: perspective(1000px) rotateX(5deg) rotateY(0deg) translateZ(20px) !important;
+      box-shadow: 0 20px 50px rgba(0, 180, 216, 0.3);
+    }
+    
+    .service-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+      box-shadow: 0 10px 20px rgba(0, 180, 216, 0.3);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+    }
+    
+    .service-card:hover .service-icon {
+      transform: rotateY(180deg) scale(1.1);
+    }
+    
+    .service-title {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      color: #00b4d8;
+      transform: translateZ(30px);
+    }
+    
+    body.light .service-title {
+      color: #2c5282;
+    }
+    
+    .service-text {
+      color: #777;
+      line-height: 1.7;
+      transform: translateZ(20px);
+    }
+    
+    body.dark .service-text {
+      color: #ccc;
+    }
+    
+    /* Products Section Styles */
+    .products-section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.05) 0%, rgba(0, 119, 182, 0.05) 100%);
+      display: none;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    
+    body.dark .products-section {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.05) 0%, rgba(0, 119, 182, 0.05) 100%);
+    }
+    
+    body.light .products-section {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.03) 0%, rgba(0, 119, 182, 0.03) 100%);
+    }
+    
+    .products-section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .products-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .products-header {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+    
+    .products-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #00b4d8;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+    
+    body.light .products-title {
+      color: #2c5282;
+    }
+    
+    .products-intro {
+      max-width: 800px;
+      margin: 0 auto 60px;
+      text-align: center;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #555;
+    }
+    
+    body.dark .products-intro {
+      color: #eee;
+    }
+    
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+    }
+    
+    .product-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: all 0.5s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transform: translateY(30px);
+      opacity: 0;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    body.light .product-card {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .product-card.active {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .product-card:hover {
+      transform: perspective(1000px) rotateX(5deg) rotateY(0deg) translateZ(20px) !important;
+      box-shadow: 0 20px 50px rgba(0, 180, 216, 0.3);
+    }
+    
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.1), rgba(0, 119, 182, 0.1));
+      z-index: -1;
+      transition: all 0.5s ease;
+    }
+    
+    .product-card:hover::before {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.2), rgba(0, 119, 182, 0.2));
+    }
+    
+    .product-title {
+      font-size: 1.3rem;
+      margin-bottom: 15px;
+      color: #00b4d8;
+      position: relative;
+      display: inline-block;
+      transform: translateZ(30px);
+    }
+    
+    body.light .product-title {
+      color: #2c5282;
+    }
+    
+    .product-title::after {
+      content: '';
+      position: absolute;
+      bottom: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 2px;
+      background: linear-gradient(90deg, #00b4d8, #0077b6);
+    }
+    
+    .product-text {
+      color: #777;
+      line-height: 1.7;
+      transform: translateZ(20px);
+    }
+    
+    body.dark .product-text {
+      color: #ccc;
+    }
+    
+    /* Flash animation */
+    @keyframes flash {
+      0% { opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+    
+    .product-card.active:nth-child(odd) {
+      animation: flash 1.5s ease-in-out 2;
+    }
+    
+    .product-card.active:nth-child(even) {
+      animation: flash 1.5s ease-in-out 2 0.5s;
+    }
+    
+    /* Careers Section Styles */
+    .careers-section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.05) 0%, rgba(0, 119, 182, 0.05) 100%);
+      display: none;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    
+    body.dark .careers-section {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.05) 0%, rgba(0, 119, 182, 0.05) 100%);
+    }
+    
+    body.light .careers-section {
+      background: linear-gradient(135deg, rgba(0, 180, 216, 0.03) 0%, rgba(0, 119, 182, 0.03) 100%);
+    }
+    
+    .careers-section.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .careers-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    .careers-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    
+    .careers-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: #00b4d8;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+    }
+    
+    body.light .careers-title {
+      color: #2c5282;
+    }
+    
+    .careers-intro {
+      color: #555;
+      font-size: 1.1rem;
+      margin-bottom: 40px;
+      text-align: center;
+    }
+    
+    body.dark .careers-intro {
+      color: #eee;
+    }
+    
+    .application-form {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      margin-bottom: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .application-form:hover {
+      transform: perspective(1000px) rotateX(5deg) rotateY(0deg) translateZ(20px);
+      box-shadow: 0 20px 50px rgba(0, 180, 216, 0.3);
+    }
+    
+    body.light .application-form {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+      transform-style: preserve-3d;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #00b4d8;
+      font-weight: 600;
+      transform: translateZ(30px);
+    }
+    
+    body.light .form-group label {
+      color: #2c5282;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 1rem;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      transform: scale(1.02) translateZ(20px);
+      box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.3);
+    }
+    
+    body.light .form-group input,
+    body.light .form-group select,
+    body.light .form-group textarea {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid #ddd;
+      color: #333;
+    }
+    
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    .current-openings {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .current-openings:hover {
+      transform: perspective(1000px) rotateX(5deg) rotateY(0deg) translateZ(20px);
+      box-shadow: 0 20px 50px rgba(0, 180, 216, 0.3);
+    }
+    
+    body.light .current-openings {
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .current-openings h3 {
+      color: #00b4d8;
+      margin-bottom: 20px;
+      text-align: center;
+      font-size: 1.5rem;
+    }
+    
+    body.light .current-openings h3 {
+      color: #2c5282;
+    }
+    
+    .job-item {
+      padding: 15px;
+      margin-bottom: 15px;
+      background: rgba(0, 180, 216, 0.1);
+      border-radius: 8px;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+    }
+    
+    .job-item:hover {
+      background: rgba(0, 180, 216, 0.2);
+      transform: translateX(10px) rotateY(5deg);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .job-title {
+      color: white;
+      font-weight: 600;
+      margin-bottom: 5px;
+    }
+    
+    body.light .job-title {
+      color: #2c5282;
+    }
+    
+    .job-type {
+      color: #aaa;
+      font-size: 0.9rem;
+    }
+    
+    .apply-btn {
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      float: right;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+      box-shadow: 0 5px 15px rgba(0, 180, 216, 0.3);
+    }
+    
+    .apply-btn:hover {
+      background: linear-gradient(135deg, #0077b6, #00b4d8);
+      transform: translateY(-3px) rotateX(5deg);
+      box-shadow: 0 10px 25px rgba(0, 180, 216, 0.5);
+    }
+    
+    option {
+      color: black;
+      text-align: center;
+    }
+    
+    .logo-stats-container {
+      background-size: cover;
+      height: 70vh;
+      background-position: center;
+      backdrop-filter: blur(40px);
+      border-radius: 10px;
+      animation: exemple 20s infinite;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    @keyframes exemple {
+      0% { background: url(bk.jpg); background-size: cover; background-position: center; }
+      25% { background: url(bk.png); background-size: cover; background-position: center; }
+      50% { background: url(bk2.jpg); background-size: cover; background-position: center; }
+      75% { background: url(bk1.jpg); background-size: cover; background-position: center; }
+      100% { background: url(bk.jpg); background-size: cover; background-position: center; }
+    }
+    
+    h1 span {
+      animation: bounce 1s ease infinite alternate;
+      position: relative;
+      top: 40px;
+      display: inline-block;
+      transform-style: preserve-3d;
+    }
+    
+    .title {
+      display: block;
+      margin-top: 40px;
+    }
+    
+    h1 span:nth-child(2) { animation-delay: 0.1s; }
+    h1 span:nth-child(3) { animation-delay: 0.2s; }
+    h1 span:nth-child(4) { animation-delay: 0.3s; }
+    h1 span:nth-child(5) { animation-delay: 0.4s; }
+    h1 span:nth-child(6) { animation-delay: 0.5s; }
+    h1 span:nth-child(7) { animation-delay: 0.6s; }
+    h1 span:nth-child(8) { animation-delay: 0.7s; }
+    h1 span:nth-child(9) { animation-delay: 0.8s; }
+    h1 span:nth-child(10) { animation-delay: 0.9s; }
+    h1 span:nth-child(11) { animation-delay: 1s; }
+    @keyframes bounce {
+      100% {
+        top: -10px;
+        text-shadow: 0 0 20px rgba(0, 180, 216, 0.8);
+      }   
+    }
+    
+    #c1:hover {
+      rotate: 10deg;
+      scale: 1.05;
+      background: url(sh.jpg);
+      background-size: cover;
+      transition: all 0.5s ease;
+    }
+    
+    #c1:hover * {
+      opacity: 0;
+    }
+    
+    #c2:hover {
+      rotate: 10deg;
+      scale: 1.05;
+      background: url(ei.jpg);
+      background-size: cover;
+      transition: all 0.5s ease;
+    }
+    
+    #c2:hover * {
+      opacity: 0;
+    }
+    
+    #c3:hover {
+      rotate: 10deg;
+      scale: 1.05;
+      background: url(ir.jpg);
+      background-size: cover;
+      transition: all 0.5s ease;
+    }
+    
+    #c3:hover * {
+      opacity: 0;
+    }
+    
+    #c4:hover {
+      rotate: 10deg;
+      scale: 1.05;
+      background: url(vs.jpg);
+      background-size: cover;
+      transition: all 0.5s ease;
+    }
+    
+    #c4:hover * {
+      opacity: 0;
+    }
+    
+    #c5:hover {
+      rotate: 10deg;
+      scale: 1.05;
+      background: url(ap.jpg);
+      background-size: cover;
+      transition: all 0.5s ease;
+    }
+    
+    #c5:hover * {
+      opacity: 0;
+    }
+    
+    #c6:hover {
+      rotate: 10deg;
+      scale: 1.05;
+      background: url(si.jpg);
+      background-size: cover;
+      transition: all 0.5s ease;
+    }
+    
+    #c6:hover * {
+      opacity: 0;
+    }
+    
+    /* Mobile Menu */
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: inherit;
+      font-size: 1.8rem;
+      cursor: pointer;
+      z-index: 101;
+      transition: transform 0.5s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+    }
+    
+    .mobile-menu-btn:hover {
+      transform: rotate(90deg);
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    body.light .mobile-menu-btn:hover {
+      background: rgba(0, 0, 0, 0.05);
+    }
+    
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 80%;
+      max-width: 300px;
+      height: 100vh;
+      background: rgba(30, 30, 30, 0.95);
+      backdrop-filter: blur(20px);
+      z-index: 100;
+      transition: right 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      padding: 80px 20px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      transform-style: preserve-3d;
+      border-left: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    body.light .mobile-menu {
+      background: rgba(255, 255, 255, 0.95);
+      border-left: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .mobile-menu.active {
+      right: 0;
+    }
+    
+    .mobile-menu a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.2rem;
+      padding: 15px;
+      border-radius: 10px;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+      font-weight: 500;
+    }
+    
+    body.light .mobile-menu a {
+      color: #222;
+    }
+    
+    .mobile-menu a:hover {
+      background: rgba(0, 180, 216, 0.3);
+      transform: translateX(10px) rotateY(5deg);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .mobile-menu-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 99;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      backdrop-filter: blur(5px);
+    }
+    
+    .mobile-menu-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    /* Scroll to top button */
+    .scroll-to-top {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.5s ease;
+      z-index: 90;
+      transform-style: preserve-3d;
+      box-shadow: 0 5px 20px rgba(0, 180, 216, 0.4);
+    }
+    
+    .scroll-to-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .scroll-to-top:hover {
+      background: linear-gradient(135deg, #0077b6, #00b4d8);
+      transform: translateY(-5px) rotateX(10deg);
+      box-shadow: 0 10px 30px rgba(0, 180, 216, 0.6);
+    }
+    
+    /* Enhanced animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    @keyframes slideInUp {
+      from {
+        transform: translateY(50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+    
+    .animate-on-scroll {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    
+    .animate-on-scroll.animated {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Smooth transitions for all interactive elements */
+    a, button, input, textarea, select {
+      transition: all 0.3s ease;
+    }
+    
+    /* Language Switcher */
+    .language-switcher {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      z-index: 100;
+      display: flex;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(10px);
+      padding: 10px;
+      border-radius: 50px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform-style: preserve-3d;
+      transition: all 0.5s ease;
+    }
+    
+    body.light .language-switcher {
+      background: rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+    
+    .language-switcher:hover {
+      transform: translateY(-5px) rotateX(5deg);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .language-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.5s ease;
+      transform-style: preserve-3d;
+      font-weight: 600;
+    }
+    
+    body.light .language-btn {
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      color: #222;
+    }
+    
+    .language-btn:hover {
+      background: rgba(0, 180, 216, 0.3);
+      transform: rotateY(180deg);
+    }
+    
+    .language-btn.active {
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+      transform: scale(1.1);
+    }
+    
+    /* 3D Shapes for Decorations */
+    .shape-3d {
+      position: absolute;
+      z-index: -1;
+      opacity: 0.3;
+      animation: float 6s ease-in-out infinite;
+      filter: blur(1px);
+    }
+    
+    .shape-1 {
+      top: 20%;
+      left: 5%;
+      width: 100px;
+      height: 100px;
+      background: #00b4d8;
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      box-shadow: 0 0 50px #00b4d8;
+    }
+    
+    .shape-2 {
+      bottom: 10%;
+      right: 5%;
+      width: 150px;
+      height: 150px;
+      background: #0077b6;
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+      box-shadow: 0 0 50px #0077b6;
+      animation-delay: 2s;
+    }
+    
+    .shape-3 {
+      top: 60%;
+      left: 10%;
+      width: 80px;
+      height: 80px;
+      background: #2c5282;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      box-shadow: 0 0 30px #2c5282;
+      animation-delay: 4s;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    
+    /* Parallax Scrolling Effect */
+    .parallax {
+      transform-style: preserve-3d;
+    }
+    
+    .parallax-layer {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+    }
+    
+    /* Advanced 3D Card Flip */
+    .flip-card {
+      perspective: 1000px;
+      width: 100%;
+      height: 300px;
+    }
+    
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s;
+      transform-style: preserve-3d;
+    }
+    
+    .flip-card:hover .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .flip-card-back {
+      transform: rotateY(180deg);
+      background: linear-gradient(135deg, #00b4d8, #0077b6);
+      color: white;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 992px) {
+      nav ul {
+        gap: 1.5rem;
+      }
+      
+      .logo-stats-container {
+        height: auto;
+        padding: 1.5rem;
+      }
+      
+      .container {
+        flex-direction: column;
+        padding: 1.5rem;
+      }
+      
+      .stats-column {
+        flex-direction: row;
+        margin: 1rem 0;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .stat-item {
+        margin: 0.5rem 1.5rem;
+        min-width: 100px;
+      }
+      
+      #l1 {
+        margin: 1.5rem auto;
+        order: -1;
+        width: 200px;
+        height: 200px;
+      }
+      
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      small {
+        font-size: 1.2rem;
+      }
+      
+      .engagements-grid {
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      }
+      
+      .contact-content {
+        flex-direction: column;
+      }
+      
+      .contact-info, .contact-form {
+        width: 100%;
+        min-width: auto;
+      }
+      
+      .map-container {
+        height: 400px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      nav {
+        padding: 1rem;
+      }
+      
+      nav ul {
+        display: none;
+      }
+      
+      .mobile-menu-btn {
+        display: flex;
+      }
+      
+      .logo-stats-container {
+        margin-top: 70px;
+        padding: 1rem;
+      }
+      
+      .stat-number {
+        font-size: 2.5rem;
+      }
+      
+      .stat-label {
+        font-size: 0.9rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      small {
+        font-size: 1.1rem;
+      }
+      
+      .engagement-card {
+        padding: 1.5rem;
+      }
+      
+      .engagement-icon {
+        font-size: 2.5rem;
+      }
+      
+      .engagement-title {
+        font-size: 1.3rem;
+      }
+      
+      .floating-btn {
+        width: 180px;
+        height: 70px;
+        font-size: 15px;
+      }
+      
+      .contact-us-btn {
+        width: 180px;
+        height: 55px;
+        font-size: 15px;
+      }
+      
+      .reasons-panel {
+        width: 90%;
+        padding: 20px;
+      }
+      
+      .section-title {
+        font-size: 2rem;
+      }
+      
+      .about-title, .services-title, .products-title, .careers-title {
+        font-size: 2rem;
+      }
+    }
+    
+    @media (max-width: 576px) {
+      .logo-stats-container {
+        height: auto;
+      }
+      
+      .container {
+        padding: 1rem;
+      }
+      
+      .stat-item {
+        min-width: 80px;
+        margin: 0.5rem 1rem;
+      }
+      
+      .stat-number {
+        font-size: 2rem;
+      }
+      
+      #l1 {
+        width: 150px;
+        height: 150px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      small {
+        font-size: 1rem;
+      }
+      
+      .engagement-card {
+        padding: 1.2rem;
+      }
+      
+      .engagement-icon {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+      
+      .engagement-title {
+        font-size: 1.2rem;
+      }
+      
+      .engagement-text {
+        font-size: 0.9rem;
+      }
+      
+      .floating-btn {
+        width: 160px;
+        height: 60px;
+        font-size: 14px;
+      }
+      
+      .contact-us-btn {
+        width: 160px;
+        height: 50px;
+        font-size: 14px;
+      }
+      
+      .contact-method {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      
+      .contact-icon {
+        margin-right: 0;
+        margin-bottom: 1rem;
+      }
+      
+      .social-links {
+        justify-content: center;
+      }
+      
+      .chatbot-trigger {
+        width: 50px;
+        height: 50px;
+        bottom: 15px;
+        right: 15px;
+      }
+      
+      .chatbot-trigger i {
+        font-size: 1.2rem;
+      }
+      
+      .chatbot {
+        width: 90%;
+        right: 5%;
+        height: 70vh;
+        bottom: 80px;
+      }
+      
+      .section-title {
+        font-size: 1.8rem;
+      }
+      
+      .about-title, .services-title, .products-title, .careers-title {
+        font-size: 1.8rem;
+      }
+      
+      .language-switcher {
+        top: 15px;
+        left: 15px;
+      }
+      
+      .language-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 0.9rem;
+      }
+    }
+    
+    @media (max-width: 400px) {
+      .stat-number {
+        font-size: 1.8rem;
+      }
+      
+      .stat-label {
+        font-size: 0.8rem;
+      }
+      
+      h1 {
+        font-size: 1.6rem;
+      }
+      
+      small {
+        font-size: 0.9rem;
+      }
+      
+      .floating-btn {
+        width: 140px;
+        height: 50px;
+        font-size: 12px;
+      }
+      
+      .contact-us-btn {
+        width: 140px;
+        height: 45px;
+        font-size: 12px;
+      }
+      
+      .engagement-card {
+        padding: 1rem;
+      }
+      
+      .contact-method {
+        text-align: center;
+      }
+      
+      .scroll-to-top {
+        width: 45px;
+        height: 45px;
+        bottom: 70px;
+      }
+      
+      .shape-1, .shape-2, .shape-3 {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body class="dark">
+  <!-- Loading Screen -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-content">
+      <div class="loading-ring"></div>
+      <div class="loading-ring"></div>
+      <div class="loading-ring"></div>
+      <div class="loading-logo"></div>
+    </div>
+    <div class="loading-text">DuraProtect</div>
+    <div class="loading-subtext">Chargement des solutions de sécurité intelligentes</div>
+    <div class="loading-bar">
+      <div class="loading-progress" id="loadingProgress"></div>
+    </div>
+  </div>
+
+  <!-- 3D Shapes for Background -->
+  <div class="shape-3d shape-1"></div>
+  <div class="shape-3d shape-2"></div>
+  <div class="shape-3d shape-3"></div>
+
+  <canvas id="animated-bg"></canvas>
+
+  <!-- Language Switcher -->
+  <div class="language-switcher">
+    <button class="language-btn active" data-lang="fr">FR</button>
+    <button class="language-btn" data-lang="en">EN</button>
+    <button class="language-btn" data-lang="ar">AR</button>
+  </div>
+
+  <nav id="mainNav">
+    <div class="logo">DuraProtect</div>
+    <ul>
+      <li><a href="#" class="nav-link active" data-section="home">Accueil</a></li>
+      <li><a href="#" class="nav-link" data-section="about">À propos</a></li>
+      <li><a href="#" class="nav-link" data-section="services">Services</a></li>
+      <li><a href="#" class="nav-link" data-section="products">Produits</a></li>
+      <li><a href="#" class="nav-link" data-section="careers">Carrières</a></li>
+    </ul>
+    <button class="toggle-mode">
+      <i class="fas fa-moon"></i>
+      <span>Dark</span>
+    </button>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+      <i class="fas fa-bars"></i>
+    </button>
+  </nav>
+  
+  <!-- Mobile Menu -->
+  <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#" class="nav-link active" data-section="home">Accueil</a>
+    <a href="#" class="nav-link" data-section="about">À propos</a>
+    <a href="#" class="nav-link" data-section="services">Services</a>
+    <a href="#" class="nav-link" data-section="products">Produits</a>
+    <a href="#" class="nav-link" data-section="careers">Carrières</a>
+    <button class="toggle-mode mobile-toggle">
+      <i class="fas fa-moon"></i>
+      <span>Dark Mode</span>
+    </button>
+  </div>
+
+  <!-- Home Content -->
+  <div class="home-content" id="homeContent">
+    <!-- Logo and Stats Section -->
+    <div class="logo-stats-container">
+      <div class="container">
+        <div class="stats-column">
+          <div class="stat-item">
+            <div class="stat-number" id="stat1">0</div>
+            <div class="stat-label">Années d'expérience</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="stat2">0</div>
+            <div class="stat-label">Équipe professionnelle</div>
+          </div>
+        </div>
+        
+        <img src="l1.png" id="l1" alt="DuraProtect Logo">
+        
+        <div class="stats-column">
+          <div class="stat-item">
+            <div class="stat-number" id="stat3">0</div>
+            <div class="stat-label">Satisfaction client</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="stat4">0</div>
+            <div class="stat-label">Projets réalisés</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Us Button -->
+    <button class="contact-us-btn" id="contactUsBtn">
+      <i class="fas fa-phone-alt"></i> Contactez-nous
+    </button>
+
+    <div class="header-container">
+      <h1 id="title"></h1>
+      <small id="subtitle"></small>
+    </div>
+
+    <!-- Floating Button -->
+    <div class="floating-btn-container">
+      <button class="floating-btn" id="whyBtn">Pourquoi<br>DuraProtect</button>
+    </div>
+
+    <!-- Engagements Section -->
+    <div class="engagements-container">
+      <h2 class="section-title">Nos Engagements</h2>
+      <div class="engagements-grid">
+        <div class="engagement-card animate-on-scroll">
+          <div class="engagement-icon"><i class="fas fa-shield-alt"></i></div>
+          <h3 class="engagement-title">Protection Totale</h3>
+          <p class="engagement-text">Protégez vos biens et vos proches avec nos systèmes de sécurité avancés</p>
+        </div>
+        
+        <div class="engagement-card animate-on-scroll">
+          <div class="engagement-icon"><i class="fas fa-cogs"></i></div>
+          <h3 class="engagement-title">Contrôle Intelligent</h3>
+          <p class="engagement-text">Gardez la maîtrise de vos équipements où que vous soyez</p>
+        </div>
+        
+        <div class="engagement-card animate-on-scroll">
+          <div class="engagement-icon"><i class="fas fa-robot"></i></div>
+          <h3 class="engagement-title">Automatisation</h3>
+          <p class="engagement-text">Automatisez votre quotidien avec nos solutions intelligentes</p>
+        </div>
+        
+        <div class="engagement-card animate-on-scroll">
+          <div class="engagement-icon"><i class="fas fa-microchip"></i></div>
+          <h3 class="engagement-title">Innovation</h3>
+          <p class="engagement-text">Intégration des dernières innovations technologiques</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Contact Section -->
+    <div class="engagements-container">
+      <h2 class="section-title">Contactez-nous</h2>
+      <div class="contact-content">
+        <div class="contact-info animate-on-scroll">
+          <div class="contact-method">
+            <div class="contact-icon">
+              <i class="fas fa-phone-alt"></i>
+            </div>
+            <div class="contact-details">
+              <h3>Téléphone</h3>
+              <p>+216 29179533</p>
+              <p>+216 58913153</p>
+            </div>
+          </div>
+          <div class="contact-method">
+            <div class="contact-icon">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="contact-details">
+              <h3>Email</h3>
+              <p>contact@duraprotect.com</p>
+              <p>support@duraprotect.com</p>
+            </div>
+          </div>
+          <div class="contact-method">
+            <div class="contact-icon">
+              <i class="fas fa-map-marker-alt"></i>
+            </div>
+            <div class="contact-details">
+              <h3>Adresse</h3>
+              <p>Bhar Lazreg, La Marsa, Tunisie</p>
+            </div>
+          </div>
+          <div class="social-links">
+            <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+            <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+        <form class="contact-form animate-on-scroll" action="https://formsubmit.co/raslenneji00@gmail.com" method="POST">
+          <input type="text" placeholder="Entrez votre nom" id="contactName" required>
+          <input type="email" placeholder="Entrez votre email" id="contactEmail" required>
+          <textarea placeholder="Entrez votre message" id="contactMessage" required></textarea>
+          <button class="submit-btn" type="submit">Envoyer</button>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Reasons Panel -->
+    <div class="panel-overlay" id="panelOverlay"></div>
+    <div class="reasons-panel" id="reasonsPanel">
+      <button class="close-panel" id="closePanel"><i class="fas fa-times"></i></button>
+      <h2>Pourquoi choisir DuraProtect</h2>
+      
+      <div class="reason-item">
+        <div class="reason-icon"><i class="fas fa-star"></i></div>
+        <div class="reason-content">
+          <h3>Expérience Professionnelle</h3>
+          <p>Notre expérience nous permet d'anticiper vos besoins et de vous proposer des solutions sur mesure, fiables et durables</p>
+        </div>
+      </div>
+      
+      <div class="reason-item">
+        <div class="reason-icon"><i class="fas fa-gem"></i></div>
+        <div class="reason-content">
+          <h3>Haute qualité</h3>
+          <p>Nous nous engageons à fournir des services et des équipements de haute qualité, répondant aux normes les plus exigeantes du secteur</p>
+        </div>
+      </div>
+      
+      <div class="reason-item">
+        <div class="reason-icon"><i class="fas fa-shield-alt"></i></div>
+        <div class="reason-content">
+          <h3>Fiabilité</h3>
+          <p>Nous vous offrons des solutions de sécurité modernes, performantes et entièrement fiables, pour une tranquillité d'esprit au quotidien.</p>
+        </div>
+      </div>
+      
+      <div class="reason-item">
+        <div class="reason-icon"><i class="fas fa-random"></i></div>
+        <div class="reason-content">
+          <h3>Flexibilité</h3>
+          <p>Nous proposons des solutions flexibles, parfaitement adaptées à vos besoins spécifiques et à l'évolution de vos exigences.</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Google Maps Section -->
+    <div class="engagements-container">
+      <h2 class="section-title">Notre emplacement</h2>
+      <div class="map-container animate-on-scroll">
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3207.851367748526!2d10.300546915258338!3d36.87251247993928!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x12e2b5af5f078781%3A0xc9de2234d121acb7!2sBhar%20Lazreg%20Marsa!5e0!3m2!1sen!2stn!4v1691580000000!5m2!1sen!2stn" 
+                allowfullscreen="" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Section -->
+  <section id="about" class="about-section">
+    <div class="about-container">
+      <div class="about-header">
+        <h2 class="about-title">À PROPOS</h2>
+        <div class="title-decoration"></div>
+        <p class="about-text animate-on-scroll">
+          DuraProtect est une entreprise spécialisée dans l'intégration de solutions intelligentes et sécurisées pour les particuliers, entreprises et collectivités. Avec plusieurs années d'expérience dans les domaines de la vidéosurveillance, de l'alarme, de la domotique, de l'éclairage intelligent et des réseaux, nous vous accompagnons dans tous vos projets, de l'étude à l'installation.
+        </p>
+      </div>
+      
+      <div class="values-grid">
+        <div class="value-card animate-on-scroll">
+          <div class="value-icon">
+            <i class="fas fa-handshake"></i>
+          </div>
+          <h3 class="value-title">Confiance</h3>
+          <p class="value-text">Nous croyons que toute relation professionnelle solide repose sur la confiance. C'est pourquoi nous nous engageons à instaurer un climat de respect, d'écoute et de fiabilité, aussi bien en interne qu'avec nos clients.</p>
+        </div>
+        
+        <div class="value-card animate-on-scroll">
+          <div class="value-icon">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <h3 class="value-title">Innovation</h3>
+          <p class="value-text">Dans un monde en constante évolution, nous faisons de l'innovation un moteur de progrès. Nos équipes sont en veille permanente pour identifier, tester et intégrer les technologies les plus performantes du marché.</p>
+        </div>
+        
+        <div class="value-card animate-on-scroll">
+          <div class="value-icon">
+            <i class="fas fa-glasses"></i>
+          </div>
+          <h3 class="value-title">Transparence</h3>
+          <p class="value-text">Nous prônons une transparence totale à chaque étape de nos projets. Qu'il s'agisse de nos offres, de nos délais ou de nos tarifs, tout est présenté avec clarté, sans zones d'ombre.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Services Section -->
+  <section class="services-section" id="services">
+    <div class="services-container">
+      <div class="services-header">
+        <h2 class="services-title">Nos Services</h2>
+        <div class="title-decoration"></div>
+        <p class="services-intro animate-on-scroll">
+          Nous vous proposons une gamme complète de solutions de sécurité intelligentes et personnalisées, allant de la <strong>vidéosurveillance à l'installation d'alarmes</strong>, en passant par les <strong>systèmes de détection d'intrusion</strong>, l'<strong>éclairage connecté</strong> et les <strong>technologies de maison intelligente</strong>. Grâce à notre expertise et à l'intégration des dernières innovations, nous vous aidons à protéger efficacement vos biens, vos proches et vos espaces professionnels.
+        </p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card animate-on-scroll">
+          <div class="service-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h3 class="service-title">Sécurité</h3>
+          <p class="service-text">Solutions complètes de surveillance et protection pour votre domicile ou entreprise.</p>
+        </div>
+        
+        <div class="service-card animate-on-scroll">
+          <div class="service-icon">
+            <i class="fas fa-video"></i>
+          </div>
+          <h3 class="service-title">Vidéosurveillance</h3>
+          <p class="service-text">Systèmes haute résolution avec accès distant et détection intelligente.</p>
+        </div>
+        
+        <div class="service-card animate-on-scroll">
+          <div class="service-icon">
+            <i class="fas fa-home"></i>
+          </div>
+          <h3 class="service-title">Domotique</h3>
+          <p class="service-text">Automatisation et contrôle intelligent de votre habitat pour plus de confort.</p>
+        </div>
+        
+        <div class="service-card animate-on-scroll">
+          <div class="service-icon">
+            <i class="fas fa-lightbulb"></i>
+          </div>
+          <h3 class="service-title">Éclairage Intelligent</h3>
+          <p class="service-text">Solutions d'éclairage connecté pour économie d'énergie et ambiance personnalisée.</p>
+        </div>
+        
+        <div class="service-card animate-on-scroll">
+          <div class="service-icon">
+            <i class="fas fa-network-wired"></i>
+          </div>
+          <h3 class="service-title">Réseaux</h3>
+          <p class="service-text">Installation et configuration de réseaux sécurisés et performants.</p>
+        </div>
+        
+        <div class="service-card animate-on-scroll">
+          <div class="service-icon">
+            <i class="fas fa-lock"></i>
+          </div>
+          <h3 class="service-title">Contrôle d'Accès</h3>
+          <p class="service-text">Systèmes avancés pour gérer les accès à vos locaux professionnels.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Products Section -->
+  <section class="products-section" id="products">
+    <div class="products-container">
+      <div class="products-header">
+        <h2 class="products-title">Nos Produits</h2>
+        <div class="title-decoration"></div>
+        <p class="products-intro animate-on-scroll">
+          Découvrez notre gamme complète de produits intelligents pour votre maison et votre entreprise, conçus pour offrir sécurité, confort et efficacité énergétique.
+        </p>
+      </div>
+      
+      <div class="products-grid">
+        <div class="product-card animate-on-scroll" id="c1">
+          <h3 class="product-title">Smart House</h3>
+          <p class="product-text">Une habitation équipée de technologies avancées qui permettent l'automatisation, la gestion centralisée et la connectivité des différents équipements domestiques.</p>
+        </div>
+        
+        <div class="product-card animate-on-scroll" id="c2">
+          <h3 class="product-title">Éclairage Intelligent</h3>
+          <p class="product-text">Transforme la gestion de la lumière en une expérience personnalisée, économe et connectée. Grâce à des capteurs et des systèmes de commande à distance.</p>
+        </div>
+        
+        <div class="product-card animate-on-scroll" id="c3">
+          <h3 class="product-title">Installation Réseau</h3>
+          <p class="product-text">Mise en place d'une infrastructure permettant la communication et le partage de ressources entre plusieurs dispositifs informatiques.</p>
+        </div>
+        
+        <div class="product-card animate-on-scroll" id="c4">
+          <h3 class="product-title">Vidéosurveillance Intelligente</h3>
+          <p class="product-text">Protège efficacement les personnes, les biens et les locaux grâce à des caméras connectées, intelligentes et pilotables à distance.</p>
+        </div>
+        
+        <div class="product-card animate-on-scroll" id="c5">
+          <h3 class="product-title">Alarme Professionnelle</h3>
+          <p class="product-text">Une étape essentielle pour garantir la sécurité de votre domicile, de vos locaux commerciaux ou industriels.</p>
+        </div>
+        
+        <div class="product-card animate-on-scroll" id="c6">
+          <h3 class="product-title">Système d'Intrusion</h3>
+          <p class="product-text">Grâce à une combinaison de capteurs intelligents, de centrales de traitement et d'un pilotage à distance, protège efficacement les bâtiments résidentiels, commerciaux et industriels.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Careers Section -->
+  <section class="careers-section" id="careers">
+    <div class="careers-container">
+      <div class="careers-header">
+        <h2 class="careers-title">Rejoignez notre équipe</h2>
+        <div class="title-decoration"></div>
+        <p class="careers-intro animate-on-scroll">Postulez en ligne pour un stage, un emploi ou envoyez une candidature spontanée</p>
+      </div>
+      
+      <div class="application-form animate-on-scroll">
+        <form id="careerForm">
+          <div class="form-group">
+            <label for="applicationType">Type de candidature</label>
+            <select id="applicationType" required>
+              <option value="">-- Sélectionnez --</option>
+              <option value="stage">Demande de stage</option>
+              <option value="emploi">Candidature pour emploi</option>
+              <option value="spontanee">Candidature spontanée</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="fullName">Nom complet</label>
+            <input type="text" id="fullName" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="phone">Téléphone</label>
+            <input type="tel" id="phone">
+          </div>
+          
+          <div class="form-group">
+            <label for="cv">CV (PDF, max 2MB)</label>
+            <input type="file" id="cv" accept=".pdf" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="motivation">Lettre de motivation</label>
+            <textarea id="motivation" rows="5"></textarea>
+          </div>
+          
+          <button type="submit" class="submit-btn">Envoyer la candidature</button>
+        </form>
+      </div>
+      
+      <div class="current-openings animate-on-scroll">
+        <h3>Offres d'emploi actuelles</h3>
+        <div class="job-item">
+          <div class="job-title">Technicien en sécurité</div>
+          <div class="job-type">CDI - Temps plein</div>
+          <button class="apply-btn" data-ref="TECH-2023">Postuler</button>
+        </div>
+        <div class="job-item">
+          <div class="job-title">Commercial B2B</div>
+          <div class="job-type">CDD 1 an</div>
+          <button class="apply-btn" data-ref="COM-2023">Postuler</button>
+        </div>
+        <div class="job-item">
+          <div class="job-title">Stagiaire en développement</div>
+          <div class="job-type">Stage 6 mois</div>
+          <button class="apply-btn" data-ref="DEV-2023">Postuler</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Scroll to top button -->
+  <div class="scroll-to-top" id="scrollToTop">
+    <i class="fas fa-arrow-up"></i>
+  </div>
+
+  <!-- Chatbot Trigger -->
+  <div class="chatbot-trigger" id="chatbotTrigger">
+    <i class="fas fa-comment-dots"></i>
+  </div>
+
+  <!-- Chatbot -->
+  <div class="chatbot-container">
+    <div class="chatbot" id="chatbot">
+      <div class="chatbot-header">
+        <div class="chatbot-title">DuraProtect Assistant</div>
+        <button class="chatbot-close" id="chatbotClose">&times;</button>
+      </div>
+      <div class="chatbot-messages" id="chatbotMessages">
+        <div class="message bot-message">Bonjour! Je suis l'assistant virtuel DuraProtect. Comment puis-je vous aider aujourd'hui?</div>
+      </div>
+      <div class="chatbot-input">
+        <input type="text" id="chatbotInput" placeholder="Tapez votre message...">
+        <button id="chatbotSend"><i class="fas fa-paper-plane"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Loading Animation
+    const loadingScreen = document.getElementById('loadingScreen');
+    const loadingProgress = document.getElementById('loadingProgress');
+
+    // Simulate loading progress with more realistic steps
+    let progress = 0;
+    const loadingSteps = [
+      { step: 10, delay: 200 },
+      { step: 25, delay: 300 },
+      { step: 40, delay: 400 },
+      { step: 60, delay: 500 },
+      { step: 75, delay: 600 },
+      { step: 90, delay: 700 },
+      { step: 100, delay: 800 }
+    ];
+
+    let currentStep = 0;
+    
+    function updateLoading() {
+      if (currentStep < loadingSteps.length) {
+        const { step, delay } = loadingSteps[currentStep];
+        progress = step;
+        loadingProgress.style.width = `${progress}%`;
+        currentStep++;
+        
+        if (progress >= 100) {
+          setTimeout(() => {
+            loadingScreen.style.opacity = '0';
+            setTimeout(() => {
+              loadingScreen.style.display = 'none';
+              initPage();
+            }, 1000);
+          }, 500);
+        } else {
+          setTimeout(updateLoading, delay);
+        }
+      }
+    }
+
+    // Start loading animation
+    setTimeout(updateLoading, 500);
+
+    // Initialize page after loading
+    function initPage() {
+      animateText();
+      animateStats();
+      initParticleBackground();
+      initScrollAnimations();
+      initNavScroll();
+      initLanguageSwitcher();
+      
+      // Add animation to logo after load
+      const logo = document.getElementById('l1');
+      setTimeout(() => {
+        logo.style.transform = 'rotateY(360deg)';
+        logo.style.transition = 'transform 1.5s ease';
+      }, 500);
+    }
+
+    // Animate statistics numbers with smoother animation
+    function animateStats() {
+      const stat1 = document.getElementById('stat1');
+      const stat2 = document.getElementById('stat2');
+      const stat3 = document.getElementById('stat3');
+      const stat4 = document.getElementById('stat4');
+      
+      const targetValues = [5, 12, 98, 50];
+      const durations = [2000, 2500, 1800, 3000];
+      
+      animateNumber(stat1, targetValues[0], durations[0], '+');
+      animateNumber(stat2, targetValues[1], durations[1], '+');
+      animateNumber(stat3, targetValues[2], durations[2], '%');
+      animateNumber(stat4, targetValues[3], durations[3], '+');
+    }
+
+    function animateNumber(element, target, duration, suffix = '') {
+      const start = 0;
+      const increment = target / (duration / 16);
+      let current = start;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          clearInterval(timer);
+          current = target;
+        }
+        element.textContent = Math.floor(current) + suffix;
+        
+        // Add bounce effect when reaching certain milestones
+        if (Math.floor(current) % 10 === 0 || current >= target) {
+          element.style.transform = 'scale(1.2) translateZ(20px)';
+          setTimeout(() => {
+            element.style.transform = 'scale(1) translateZ(20px)';
+          }, 200);
+        }
+      }, 16);
+    }
+
+    // Professional Text Animation with 3D effect
+    function animateText() {
+      const titleText = "DURAPROTECT";
+      const subtitleText = "Solutions de sécurité innovantes pour protéger votre monde";
+      
+      const title = document.getElementById('title');
+      const subtitle = document.getElementById('subtitle');
+      
+      // Clear existing content
+      title.innerHTML = '';
+      subtitle.innerHTML = '';
+      
+      // Animate title with 3D effect
+      for (let i = 0; i < titleText.length; i++) {
+        const char = document.createElement('span');
+        char.className = 'char';
+        char.textContent = titleText[i];
+        char.style.transitionDelay = `${i * 0.05}s`;
+        char.style.transformOrigin = 'bottom center';
+        title.appendChild(char);
+        
+        // Special styling for space
+        if (titleText[i] === ' ') {
+          char.style.padding = '0 5px';
+        }
+      }
+      
+      // Animate subtitle with 3D effect
+      for (let i = 0; i < subtitleText.length; i++) {
+        const char = document.createElement('span');
+        char.className = 'char';
+        char.textContent = subtitleText[i];
+        char.style.transitionDelay = `${0.5 + i * 0.03}s`;
+        char.style.transformOrigin = 'bottom center';
+        subtitle.appendChild(char);
+        
+        if (subtitleText[i] === ' ') {
+          char.style.padding = '0 2px';
+        }
+      }
+      
+      // Trigger animation
+      setTimeout(() => {
+        document.querySelectorAll('#title .char').forEach(char => {
+          char.classList.add('visible');
+        });
+      }, 300);
+      
+      setTimeout(() => {
+        document.querySelectorAll('#subtitle .char').forEach(char => {
+          char.classList.add('visible');
+        });
+      }, 800);
+      
+      // Add continuous subtle animation to title
+      setInterval(() => {
+        const chars = document.querySelectorAll('#title .char');
+        chars.forEach((char, index) => {
+          const delay = index * 0.1;
+          setTimeout(() => {
+            char.style.transform = 'translateY(-3px) rotateX(10deg)';
+            setTimeout(() => {
+              char.style.transform = 'translateY(0) rotateX(0)';
+            }, 500);
+          }, delay * 1000);
+        });
+      }, 5000);
+    }
+
+    // Dark mode toggle with smooth transition
+    const toggleBtn = document.querySelector('.toggle-mode');
+    const mobileToggleBtn = document.querySelector('.mobile-toggle');
+    const body = document.body;
+    
+    function toggleDarkMode() {
+      body.classList.toggle('dark');
+      body.classList.toggle('light');
+      const isDark = body.classList.contains('dark');
+      
+      // Update button text and icon
+      const icon = isDark ? 'fa-moon' : 'fa-sun';
+      const text = isDark ? 'Dark' : 'Light';
+      
+      toggleBtn.innerHTML = `<i class="fas ${icon}"></i><span>${text}</span>`;
+      
+      if (mobileToggleBtn) {
+        mobileToggleBtn.innerHTML = `<i class="fas ${icon}"></i><span>${text} Mode</span>`;
+      }
+      
+      // Add transition class for smooth change
+      document.documentElement.style.transition = 'background 0.5s ease, color 0.5s ease';
+      setTimeout(() => {
+        document.documentElement.style.transition = '';
+      }, 500);
+    }
+    
+    toggleBtn.addEventListener('click', toggleDarkMode);
+    if (mobileToggleBtn) {
+      mobileToggleBtn.addEventListener('click', toggleDarkMode);
+    }
+
+    // Reasons Panel Toggle with 3D effect
+    const whyBtn = document.getElementById('whyBtn');
+    const reasonsPanel = document.getElementById('reasonsPanel');
+    const panelOverlay = document.getElementById('panelOverlay');
+    const closePanel = document.getElementById('closePanel');
+
+    whyBtn.addEventListener('click', () => {
+      reasonsPanel.classList.add('active');
+      panelOverlay.classList.add('active');
+      document.body.style.overflow = 'hidden';
+      
+      // Add animation to reason items
+      const reasonItems = document.querySelectorAll('.reason-item');
+      reasonItems.forEach((item, index) => {
+        setTimeout(() => {
+          item.style.transform = 'translateX(0) rotateY(0)';
+          item.style.opacity = '1';
+        }, index * 100);
+      });
+    });
+
+    closePanel.addEventListener('click', () => {
+      reasonsPanel.classList.remove('active');
+      panelOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+
+    panelOverlay.addEventListener('click', () => {
+      reasonsPanel.classList.remove('active');
+      panelOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+
+    // Chatbot toggle with 3D animation
+    const chatbotTrigger = document.getElementById('chatbotTrigger');
+    const chatbot = document.getElementById('chatbot');
+    const chatbotClose = document.getElementById('chatbotClose');
+    const chatbotMessages = document.getElementById('chatbotMessages');
+    const chatbotInput = document.getElementById('chatbotInput');
+    const chatbotSend = document.getElementById('chatbotSend');
+
+    let chatbotVisible = false;
+
+    function toggleChatbot() {
+      chatbotVisible = !chatbotVisible;
+      if (chatbotVisible) {
+        chatbot.classList.add('chatbot-visible');
+        setTimeout(() => {
+          chatbotInput.focus();
+          // Add greeting animation
+          const greeting = document.querySelector('.bot-message');
+          greeting.style.animation = 'messageIn 0.3s ease-out forwards';
+        }, 100);
+      } else {
+        chatbot.classList.remove('chatbot-visible');
+      }
+    }
+
+    chatbotTrigger.addEventListener('click', toggleChatbot);
+    chatbotClose.addEventListener('click', toggleChatbot);
+
+    // Enhanced chatbot responses with typing indicator
+    const responses = {
+      "bonjour": "Bonjour! Comment puis-je vous aider avec DuraProtect aujourd'hui?",
+      "salut": "Salut! Comment puis-je vous aider?",
+      "hello": "Hello! How can I help you today?",
+      "services": "Nous offrons des services de sécurité complète incluant surveillance, protection des données et systèmes d'alarme.",
+      "produits": "Nos produits incluent des systèmes de sécurité intelligents, des caméras HD et des solutions de cybersécurité.",
+      "contact": "Vous pouvez nous contacter au +216 29179533 ou par email à contact@duraprotect.com",
+      "urgence": "Pour une urgence, veuillez composer le 112 immédiatement.",
+      "merci": "Je vous en prie! N'hésitez pas si vous avez d'autres questions.",
+      "thanks": "You're welcome! Let me know if you need anything else.",
+      "chokran": "عفوا! لا تتردد في طرح أي أسئلة أخرى لديك.",
+      "help": "Je peux vous aider avec des informations sur nos services, produits ou contact. Que souhaitez-vous savoir?",
+      "aide": "Comment puis-je vous aider? Vous pouvez me poser des questions sur nos services, produits ou coordonnées.",
+      "سلام": "مرحبا! كيف يمكنني مساعدتك اليوم؟",
+      "hi": "Hi there! How can I assist you today?"
+    };
+
+    function addMessage(text, isUser) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message', isUser ? 'user-message' : 'bot-message');
+      messageDiv.textContent = text;
+      chatbotMessages.appendChild(messageDiv);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+      
+      // Add 3D effect
+      messageDiv.style.transform = isUser ? 
+        'perspective(1000px) rotateY(10deg) translateX(10px)' : 
+        'perspective(1000px) rotateY(-10deg) translateX(-10px)';
+      
+      setTimeout(() => {
+        messageDiv.style.transform = 'perspective(1000px) rotateY(0) translateX(0)';
+      }, 300);
+    }
+
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.classList.add('message', 'bot-message');
+      typingDiv.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+      chatbotMessages.appendChild(typingDiv);
+      chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+      return typingDiv;
+    }
+
+    function removeTypingIndicator(indicator) {
+      indicator.remove();
+    }
+
+    function handleUserInput() {
+      const userText = chatbotInput.value.trim();
+      if (userText) {
+        addMessage(userText, true);
+        chatbotInput.value = '';
+
+        // Show typing indicator
+        const typingIndicator = showTypingIndicator();
+        
+        setTimeout(() => {
+          removeTypingIndicator(typingIndicator);
+          
+          let response = "Je ne comprends pas votre demande. Pouvez-vous reformuler?";
+          const lowerText = userText.toLowerCase();
+          
+          // Check for matching responses
+          for (const [keyword, reply] of Object.entries(responses)) {
+            if (lowerText.includes(keyword.toLowerCase())) {
+              response = reply;
+              break;
+            }
+          }
+          
+          // Add slight delay before bot response
+          setTimeout(() => {
+            addMessage(response, false);
+          }, 500);
+        }, 1500);
+      }
+    }
+
+    chatbotSend.addEventListener('click', handleUserInput);
+    chatbotInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') handleUserInput();
+    });
+
+    // Particle background animation with interactive elements
+    function initParticleBackground() {
+      const canvas = document.getElementById('animated-bg');
+      const ctx = canvas.getContext('2d');
+      const config = {
+        particleCount: 100,
+        particleMaxSize: 3,
+        lineLength: 150,
+        baseSpeed: 0.3,
+        color: '#00b4d8',
+        blur: 5
+      };
+
+      let particles = [];
+      let mouse = { x: null, y: null, radius: 150 };
+
+      function resizeCanvas() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        initParticles();
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+
+      window.addEventListener('mousemove', (e) => {
+        mouse.x = e.clientX;
+        mouse.y = e.clientY;
+      });
+
+      window.addEventListener('mouseout', () => {
+        mouse.x = null;
+        mouse.y = null;
+      });
+
+      class Particle {
+        constructor() {
+          this.x = Math.random() * canvas.width;
+          this.y = Math.random() * canvas.height;
+          this.size = Math.random() * config.particleMaxSize + 0.5;
+          this.density = (Math.random() * 30) + 1;
+          this.speed = config.baseSpeed * (0.5 + Math.random() * 0.5);
+          this.direction = Math.random() * Math.PI * 2;
+          this.color = `hsla(${Math.random() * 60 + 180}, 80%, 60%, ${Math.random() * 0.5 + 0.3})`;
+        }
+        
+        update() {
+          this.direction += (Math.random() - 0.5) * 0.1;
+          this.x += Math.cos(this.direction) * this.speed;
+          this.y += Math.sin(this.direction) * this.speed;
+
+          if (this.x < 0 || this.x > canvas.width) this.direction = Math.PI - this.direction;
+          if (this.y < 0 || this.y > canvas.height) this.direction = -this.direction;
+
+          if (mouse.x && mouse.y) {
+            const dx = mouse.x - this.x;
+            const dy = mouse.y - this.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            if (distance < mouse.radius) {
+              const forceDirection = Math.atan2(dy, dx);
+              const force = (mouse.radius - distance) / mouse.radius;
+              this.x -= Math.cos(forceDirection) * force * this.speed * 5;
+              this.y -= Math.sin(forceDirection) * force * this.speed * 5;
+              
+              // Change color when near mouse
+              this.color = `hsla(${Math.random() * 60 + 180}, 90%, 70%, 0.8)`;
+            } else {
+              // Return to original color
+              this.color = `hsla(${Math.random() * 60 + 180}, 80%, 60%, ${Math.random() * 0.5 + 0.3})`;
+            }
+          }
+        }
+        
+        draw() {
+          ctx.beginPath();
+          ctx.fillStyle = this.color;
+          ctx.shadowColor = this.color;
+          ctx.shadowBlur = config.blur;
+          ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      function initParticles() {
+        particles = [];
+        for (let i = 0; i < config.particleCount; i++) {
+          particles.push(new Particle());
+        }
+      }
+
+      function connectParticles() {
+        for (let a = 0; a < particles.length; a++) {
+          for (let b = a + 1; b < particles.length; b++) {
+            const dx = particles[a].x - particles[b].x;
+            const dy = particles[a].y - particles[b].y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < config.lineLength) {
+              const opacity = 1 - dist / config.lineLength;
+              ctx.beginPath();
+              ctx.strokeStyle = `hsla(200, 80%, 60%, ${opacity * 0.5})`;
+              ctx.lineWidth = 1;
+              ctx.moveTo(particles[a].x, particles[a].y);
+              ctx.lineTo(particles[b].x, particles[b].y);
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+          p.update();
+          p.draw();
+        });
+        connectParticles();
+        requestAnimationFrame(animate);
+      }
+
+      resizeCanvas();
+      animate();
+    }
+
+    // Navigation and Sections Management with smooth transitions
+    const navLinks = document.querySelectorAll('.nav-link');
+    const homeContent = document.getElementById('homeContent');
+    const aboutSection = document.getElementById('about');
+    const servicesSection = document.getElementById('services');
+    const productsSection = document.getElementById('products');
+    const careersSection = document.getElementById('careers');
+    const contactUsBtn = document.getElementById('contactUsBtn');
+
+    // Initialize all sections as inactive except home
+    aboutSection.classList.remove('active');
+    servicesSection.classList.remove('active');
+    productsSection.classList.remove('active');
+    careersSection.classList.remove('active');
+
+    function showSection(sectionId) {
+      // Hide all sections first with animation
+      homeContent.classList.add('hidden');
+      aboutSection.classList.remove('active');
+      servicesSection.classList.remove('active');
+      productsSection.classList.remove('active');
+      careersSection.classList.remove('active');
+      
+      // Remove active class from all links
+      navLinks.forEach(l => l.classList.remove('active'));
+      
+      // Add active class to clicked link
+      document.querySelector(`.nav-link[data-section="${sectionId}"]`).classList.add('active');
+      document.querySelector(`.mobile-menu .nav-link[data-section="${sectionId}"]`).classList.add('active');
+      
+      // Show the selected section with animation
+      if (sectionId === 'about') {
+        aboutSection.classList.add('active');
+        // Animate about cards
+        const valueCards = document.querySelectorAll('.value-card');
+        valueCards.forEach((card, index) => {
+          setTimeout(() => {
+            card.classList.add('active');
+          }, 200 * index);
+        });
+      } else if (sectionId === 'services') {
+        servicesSection.classList.add('active');
+        // Animate service cards
+        const serviceCards = document.querySelectorAll('.service-card');
+        serviceCards.forEach((card, index) => {
+          setTimeout(() => {
+            card.classList.add('active');
+          }, 200 * index);
+        });
+      } else if (sectionId === 'products') {
+        productsSection.classList.add('active');
+        // Animate product cards
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach((card, index) => {
+          setTimeout(() => {
+            card.classList.add('active');
+          }, 200 * index);
+        });
+      } else if (sectionId === 'careers') {
+        careersSection.classList.add('active');
+      } else if (sectionId === 'home') {
+        homeContent.classList.remove('hidden');
+      }
+      
+      // Close mobile menu if open
+      closeMobileMenu();
+      
+      // Scroll to top with smooth animation
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+
+    navLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const sectionId = link.getAttribute('data-section');
+        showSection(sectionId);
+      });
+    });
+
+    // Contact Us Button
+    contactUsBtn.addEventListener('click', () => {
+      // Scroll to contact section
+      const contactSection = document.querySelector('.engagements-container:last-child');
+      if (contactSection) {
+        window.scrollTo({
+          top: contactSection.offsetTop - 100,
+          behavior: 'smooth'
+        });
+      }
+    });
+
+    // Career Form Handling with animation
+    const careerForm = document.getElementById('careerForm');
+    if (careerForm) {
+      careerForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Show loading animation
+        const submitBtn = this.querySelector('.submit-btn');
+        const originalText = submitBtn.textContent;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Envoi en cours...';
+        submitBtn.disabled = true;
+        
+        // Simulate form submission
+        setTimeout(() => {
+          // Show success animation
+          submitBtn.innerHTML = '<i class="fas fa-check"></i> Envoyé!';
+          submitBtn.style.background = '#4CAF50';
+          
+          // Reset form
+          setTimeout(() => {
+            careerForm.reset();
+            submitBtn.textContent = originalText;
+            submitBtn.style.background = '';
+            submitBtn.disabled = false;
+            
+            // Show success message
+            const successDiv = document.createElement('div');
+            successDiv.className = 'message bot-message';
+            successDiv.textContent = 'Votre candidature a été envoyée avec succès! Nous vous contacterons bientôt.';
+            careerForm.parentNode.insertBefore(successDiv, careerForm.nextSibling);
+            
+            // Animate success message
+            setTimeout(() => {
+              successDiv.style.opacity = '1';
+              successDiv.style.transform = 'translateY(0)';
+            }, 10);
+          }, 1000);
+        }, 2000);
+      });
+    }
+
+    // Load job openings (mock data)
+    function loadJobOpenings() {
+      const jobsList = document.querySelector('.jobs-list');
+      if (!jobsList) return;
+      
+      // Mock data - replace with actual API call in production
+      const jobs = [
+        { title: "Technicien en sécurité", type: "CDI", ref: "TECH-2023" },
+        { title: "Stagiaire en développement", type: "Stage 6 mois", ref: "DEV-2023" },
+        { title: "Commercial B2B", type: "CDD 1 an", ref: "COM-2023" }
+      ];
+      
+      // Clear existing content
+      jobsList.innerHTML = '';
+      
+      // Add jobs to the list
+      jobs.forEach(job => {
+        const jobItem = document.createElement('div');
+        jobItem.className = 'job-item';
+        jobItem.innerHTML = `
+          <div class="job-title">${job.title} <span class="job-type">${job.type}</span></div>
+          <button class="apply-btn" data-ref="${job.ref}">Postuler</button>
+        `;
+        jobsList.appendChild(jobItem);
+      });
+      
+      // Add event listeners to apply buttons
+      document.querySelectorAll('.apply-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          const jobRef = this.getAttribute('data-ref');
+          const applicationType = document.getElementById('applicationType');
+          
+          if (applicationType) {
+            applicationType.value = jobRef.includes('TECH') || jobRef.includes('COM') ? 'emploi' : 'stage';
+            applicationType.dispatchEvent(new Event('change'));
+            
+            // Scroll to form with animation
+            const formElement = document.querySelector('.application-form');
+            if (formElement) {
+              window.scrollTo({
+                top: formElement.offsetTop - 100,
+                behavior: 'smooth'
+              });
+              
+              // Highlight form
+              formElement.style.boxShadow = '0 0 0 3px rgba(0, 180, 216, 0.5)';
+              setTimeout(() => {
+                formElement.style.boxShadow = '';
+              }, 2000);
+            }
+          }
+        });
+      });
+    }
+
+    // Mobile Menu Toggle with 3D effect
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileMenuOverlay = document.getElementById('mobileMenuOverlay');
+
+    function toggleMobileMenu() {
+      mobileMenu.classList.toggle('active');
+      mobileMenuOverlay.classList.toggle('active');
+      document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+      
+      // Animate menu items
+      if (mobileMenu.classList.contains('active')) {
+        const menuItems = document.querySelectorAll('.mobile-menu a, .mobile-menu button');
+        menuItems.forEach((item, index) => {
+          item.style.transform = 'translateX(100px) rotateY(90deg)';
+          item.style.opacity = '0';
+          setTimeout(() => {
+            item.style.transform = 'translateX(0) rotateY(0)';
+            item.style.opacity = '1';
+          }, index * 100);
+        });
+      }
+    }
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('active');
+      mobileMenuOverlay.classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+    mobileMenuOverlay.addEventListener('click', closeMobileMenu);
+
+    // Scroll to top button with smooth animation
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 300) {
+        scrollToTopBtn.classList.add('visible');
+      } else {
+        scrollToTopBtn.classList.remove('visible');
+      }
+    });
+
+    scrollToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+      
+      // Add animation
+      scrollToTopBtn.style.transform = 'scale(1.1) rotate(360deg)';
+      setTimeout(() => {
+        scrollToTopBtn.style.transform = 'scale(1) rotate(0)';
+      }, 500);
+    });
+
+    // Scroll animations with intersection observer
+    function initScrollAnimations() {
+      const animateElements = document.querySelectorAll('.animate-on-scroll');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animated');
+            
+            // Add additional animation for specific elements
+            if (entry.target.classList.contains('engagement-card')) {
+              entry.target.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+            } else {
+              entry.target.style.transform = 'translateY(0)';
+            }
+            
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1
+      });
+      
+      animateElements.forEach(element => {
+        observer.observe(element);
+      });
+    }
+
+    // Navbar scroll effect
+    function initNavScroll() {
+      const nav = document.getElementById('mainNav');
+      
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          nav.classList.add('scrolled');
+        } else {
+          nav.classList.remove('scrolled');
+        }
+      });
+    }
+
+    // Language Switcher with animation
+    function initLanguageSwitcher() {
+      const languageButtons = document.querySelectorAll('.language-btn');
+      
+      languageButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          // Remove active class from all buttons
+          languageButtons.forEach(btn => btn.classList.remove('active'));
+          
+          // Add active class to clicked button with animation
+          this.classList.add('active');
+          this.style.transform = 'scale(1.2) rotateY(180deg)';
+          
+          setTimeout(() => {
+            this.style.transform = 'scale(1.1) rotateY(0)';
+          }, 300);
+          
+          // Change language (simulated)
+          const lang = this.getAttribute('data-lang');
+          changeLanguage(lang);
+        });
+      });
+    }
+    
+    // Simulated language change
+    function changeLanguage(lang) {
+      // In a real implementation, you would load translations here
+      let title, subtitle;
+      
+      switch(lang) {
+        case 'fr':
+          title = "DURAPROTECT";
+          subtitle = "Solutions de sécurité innovantes pour protéger votre monde";
+          break;
+        case 'en':
+          title = "DURAPROTECT";
+          subtitle = "Innovative security solutions to protect your world";
+          break;
+        case 'ar':
+          title = "دورابروتكت";
+          subtitle = "حلول أمنية مبتكرة لحماية عالمك";
+          break;
+        default:
+          title = "DURAPROTECT";
+          subtitle = "Solutions de sécurité innovantes pour protéger votre monde";
+      }
+      
+      // Animate language change
+      const titleElement = document.getElementById('title');
+      const subtitleElement = document.getElementById('subtitle');
+      
+      titleElement.style.animation = 'fadeOut 0.3s forwards';
+      subtitleElement.style.animation = 'fadeOut 0.3s forwards';
+      
+      setTimeout(() => {
+        titleElement.textContent = title;
+        subtitleElement.textContent = subtitle;
+        
+        titleElement.style.animation = 'fadeIn 0.3s forwards';
+        subtitleElement.style.animation = 'fadeIn 0.3s forwards';
+      }, 300);
+      
+      // Show notification
+      const notification = document.createElement('div');
+      notification.className = 'language-notification';
+      notification.textContent = lang === 'fr' ? 'Langue changée en Français' : 
+                               lang === 'en' ? 'Language changed to English' : 
+                               'تم تغيير اللغة إلى العربية';
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.style.opacity = '1';
+        notification.style.transform = 'translateY(0)';
+        
+        setTimeout(() => {
+          notification.style.opacity = '0';
+          notification.style.transform = 'translateY(-20px)';
+          setTimeout(() => notification.remove(), 300);
+        }, 2000);
+      }, 10);
+    }
+
+    // Add CSS for language notification
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeOut {
+        to { opacity: 0; transform: translateY(-10px); }
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .language-notification {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        background: rgba(0, 180, 216, 0.9);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 50px;
+        z-index: 1000;
+        opacity: 0;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      }
+    `;
+    document.head.appendChild(style);
+
+    // Initialize the page with home section active
+    document.addEventListener('DOMContentLoaded', function() {
+      // Set home as active by default
+      showSection('home');
+      
+      // Add hover effect to engagement cards
+      const engagementCards = document.querySelectorAll('.engagement-card');
+      engagementCards.forEach(card => {
+        card.addEventListener('mouseenter', () => {
+          card.style.transform = 'translateY(-10px) rotateX(5deg) rotateY(5deg) scale(1.05)';
+        });
+        card.addEventListener('mouseleave', () => {
+          card.style.transform = 'translateY(0) rotateX(0) rotateY(0) scale(1)';
+        });
+      });
+      
+      // Add click effect to buttons
+      const buttons = document.querySelectorAll('button');
+      buttons.forEach(button => {
+        button.addEventListener('mousedown', () => {
+          button.style.transform = 'scale(0.95)';
+        });
+        button.addEventListener('mouseup', () => {
+          button.style.transform = 'scale(1)';
+        });
+        button.addEventListener('mouseleave', () => {
+          button.style.transform = 'scale(1)';
+        });
+      });
+      
+      // Add animation to logo on hover
+      const logo = document.querySelector('.logo');
+      logo.addEventListener('mouseenter', () => {
+        logo.style.transform = 'scale(1.1)';
+      });
+      logo.addEventListener('mouseleave', () => {
+        logo.style.transform = 'scale(1)';
+      });
+      
+      // Add continuous subtle animation to floating button
+      const floatingBtn = document.getElementById('whyBtn');
+      setInterval(() => {
+        floatingBtn.style.transform = 'translateY(-5px) rotateX(5deg)';
+        setTimeout(() => {
+          floatingBtn.style.transform = 'translateY(0) rotateX(0)';
+        }, 1000);
+      }, 3000);
+    });
+  </script>
+</body>
+</html>
