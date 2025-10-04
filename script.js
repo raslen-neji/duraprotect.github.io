@@ -320,7 +320,7 @@ function initParticleBackground() {
     particleMaxSize: 3,
     lineLength: 150,
     baseSpeed: 0.3,
-    color: '#00b4d8',
+    color: '#00d848',
     blur: 5
   };
 
@@ -379,14 +379,14 @@ function initParticleBackground() {
           this.color = `hsla(${Math.random() * 60 + 180}, 90%, 70%, 0.8)`;
         } else {
           // Return to original color
-          this.color = `hsla(${Math.random() * 60 + 180}, 80%, 60%, ${Math.random() * 0.5 + 0.3})`;
+          this.color = `hsla(${Math.random() * 60 + 180}, 20%, 0%, ${Math.random() * 0.5 + 0.3})`;
         }
       }
     }
     
     draw() {
       ctx.beginPath();
-      ctx.fillStyle = this.color;
+      ctx.fillStyle = '#00d848';
       ctx.shadowColor = this.color;
       ctx.shadowBlur = config.blur;
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -615,7 +615,7 @@ function loadJobOpenings() {
           });
           
           // Highlight form
-          formElement.style.boxShadow = '0 0 0 3px rgba(0, 180, 216, 0.5)';
+          formElement.style.boxShadow = '0 0 0 3px rgba(0, 216, 36, 0.5)';
           setTimeout(() => {
             formElement.style.boxShadow = '';
           }, 2000);
