@@ -359,7 +359,7 @@
     
     small {
       display: block;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       font-weight: 300;
       color: #4a5568;
       margin-top: 1.5rem;
@@ -2314,7 +2314,6 @@
     
     .language-btn:hover {
       background: rgba(21, 108, 14, 0.3);
-      transform: rotateY(180deg);
     }
     
     .language-btn.active {
@@ -2730,7 +2729,6 @@ body.light nav .language-btn {
 
 nav .language-btn:hover {
   background: rgba(38, 114, 24, 0.3);
-  transform: rotateY(180deg);
 }
 
 nav .language-btn.active {
@@ -2818,4 +2816,7 @@ nav .language-btn.active {
       font-size: 2rem;}
       .stat-label {
       font-size: 0.6rem;}
+      .container:hover{
+        box-shadow: none !important;
+      }
   }
