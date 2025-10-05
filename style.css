@@ -1985,9 +1985,7 @@
       background-size: cover;
       height: 70vh;
       background-position: center;
-      backdrop-filter: blur(40px);
       border-radius: 10px;
-      animation: exemple 20s infinite;
       width: 100%;
       display: flex;
       justify-content: center;
