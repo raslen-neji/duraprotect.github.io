@@ -530,7 +530,7 @@ contactUsBtn.addEventListener('click', () => {
 });
 
 // Career Form Handling with animation
-const careerForm = document.getElementById('careerForm');
+/*const careerForm = document.getElementById('careerForm');
 if (careerForm) {
   careerForm.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -568,7 +568,7 @@ if (careerForm) {
       }, 1000);
     }, 2000);
   });
-}
+}*/
 
 // Load job openings (mock data)
 function loadJobOpenings() {
