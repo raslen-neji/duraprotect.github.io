@@ -2814,12 +2814,12 @@ nav .language-btn.active {
     display: flex;
   }
   *{
-    animation: none;
-    text-shadow: none;
-    box-shadow: none;
-    filter: none;
-    backdrop-filter: none;
-    transition: none;
-    transform: none;
+    animation: none !important;
+    text-shadow: none !important;
+    box-shadow: none    !important;
+    filter: none !important ;
+    backdrop-filter: none !important;
+    transition: none !important;
+    transform: none !important;
     }
   }
