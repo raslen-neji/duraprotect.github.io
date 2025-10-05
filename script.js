@@ -42,12 +42,13 @@ setTimeout(updateLoading, 500);
 
 // Initialize page after loading
 function initPage() {
-  animateText();
   animateStats();
   if (window.innerWidth > 600) {
   initParticleBackground();}
     initScrollAnimations();
   initLanguageSwitcher();
+    animateText();
+
   
   // Add animation to logo after load
   const logo = document.getElementById('l1');
@@ -64,7 +65,7 @@ function animateStats() {
   const stat3 = document.getElementById('stat3');
   const stat4 = document.getElementById('stat4');
   
-  const targetValues = [5, 12, 98, 50];
+  const targetValues = [5, 12, 98, 10];
   const durations = [2000, 2500, 1800, 3000];
   
   animateNumber(stat1, targetValues[0], durations[0], '+');
@@ -198,37 +199,6 @@ if (mobileToggleBtn) {
 }
 
 // Reasons Panel Toggle with 3D effect
-const whyBtn = document.getElementById('whyBtn');
-const reasonsPanel = document.getElementById('reasonsPanel');
-const panelOverlay = document.getElementById('panelOverlay');
-const closePanel = document.getElementById('closePanel');
-
-whyBtn.addEventListener('click', () => {
-  reasonsPanel.classList.add('active');
-  panelOverlay.classList.add('active');
-  document.body.style.overflow = 'hidden';
-  
-  // Add animation to reason items
-  const reasonItems = document.querySelectorAll('.reason-item');
-  reasonItems.forEach((item, index) => {
-    setTimeout(() => {
-      item.style.transform = 'translateX(0) rotateY(0)';
-      item.style.opacity = '1';
-    }, index * 100);
-  });
-});
-
-closePanel.addEventListener('click', () => {
-  reasonsPanel.classList.remove('active');
-  panelOverlay.classList.remove('active');
-  document.body.style.overflow = '';
-});
-
-panelOverlay.addEventListener('click', () => {
-  reasonsPanel.classList.remove('active');
-  panelOverlay.classList.remove('active');
-  document.body.style.overflow = '';
-});
 
 // Chatbot toggle with 3D animation
 const chatbotTrigger= document.getElementById('chatbotTrigger');
@@ -364,24 +334,7 @@ function initParticleBackground() {
       if (this.x < 0 || this.x > canvas.width) this.direction = Math.PI - this.direction;
       if (this.y < 0 || this.y > canvas.height) this.direction = -this.direction;
 
-      if (mouse.x && mouse.y) {
-        const dx = mouse.x - this.x;
-        const dy = mouse.y - this.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance < mouse.radius) {
-          const forceDirection = Math.atan2(dy, dx);
-          const force = (mouse.radius - distance) / mouse.radius;
-          this.x -= Math.cos(forceDirection) * force * this.speed * 5;
-          this.y -= Math.sin(forceDirection) * force * this.speed * 5;
-          
-          // Change color when near mouse
-          this.color = `hsla(${Math.random() * 60 + 180}, 90%, 70%, 0.8)`;
-        } else {
-          // Return to original color
-          this.color = `hsla(${Math.random() * 60 + 180}, 20%, 0%, ${Math.random() * 0.5 + 0.3})`;
-        }
-      }
+      
     }
     
     draw() {
@@ -523,7 +476,7 @@ contactUsBtn.addEventListener('click', () => {
   const contactSection = document.querySelector('.engagements-container:last-child');
   if (contactSection) {
     window.scrollTo({
-      top: contactSection.offsetTop - 100,
+      top: contactSection.offsetTop - 800,
       behavior: 'smooth'
     });
   }
@@ -779,7 +732,6 @@ const translations = {
     contactBtn: "Contactez-nous",
     title: "DURAPROTECT",
     subtitle: "Solutions de sécurité innovantes pour protéger votre monde",
-    whyBtn: "Pourquoi<br>DuraProtect",
     engagements: "Nos Engagements",
     engagementCards: [
       {
@@ -820,7 +772,6 @@ const translations = {
       message: "Entrez votre message",
       submit: "Envoyer"
     },
-    whyTitle: "Pourquoi choisir DuraProtect",
     reasons: [
       {
         title: "Expérience Professionnelle",
@@ -977,7 +928,6 @@ const translations = {
     contactBtn: "Contact us",
     title: "DURAPROTECT",
     subtitle: "Innovative security solutions to protect your world",
-    whyBtn: "Why<br>DuraProtect",
     engagements: "Our Commitments",
     engagementCards: [
       {
@@ -1018,7 +968,6 @@ const translations = {
       message: "Enter your message",
       submit: "Send"
     },
-    whyTitle: "Why choose DuraProtect",
     reasons: [
       {
         title: "Professional Experience",
@@ -1173,9 +1122,8 @@ const translations = {
       projects: "المشاريع المكتملة"
     },
     contactBtn: "اتصل بنا",
-    title: "دورا بروتكت",
-    subtitle: "حلول أمنية مبتكرة لحماية عالمك",
-    whyBtn: "لماذا<br>دورا بروتكت",
+    title: "TCETORPARUD",
+    subtitle: "ednom ertov regétorp ruop setnavonni étirucés ed snoituloS",
     engagements: "التزاماتنا",
     engagementCards: [
       {
@@ -1216,7 +1164,6 @@ const translations = {
       message: "أدخل رسالتك",
       submit: "إرسال"
     },
-    whyTitle: "لماذا تختار دورا بروتكت",
     reasons: [
       {
         title: "الخبرة المهنية",
@@ -1413,7 +1360,6 @@ const translations = {
       document.getElementById('subtitle').textContent = translation.subtitle;
       
       // Update why button
-      document.getElementById('whyBtn').innerHTML = translation.whyBtn;
       
       // Update engagements section
       document.querySelector('.section-title').textContent = translation.engagements;
@@ -1435,11 +1381,7 @@ document.querySelectorAll('.contact-details').forEach((detailsEl, i) => {
       document.querySelector('.submit-btn').textContent = translation.form.submit;
       
       // Update why section
-      document.querySelector('.reasons-panel h2').textContent = translation.whyTitle;
-      document.querySelectorAll('.reason-content h3').forEach((el, i) => el.textContent = translation.reasons[i].title);
-      document.querySelectorAll('.reason-content p').forEach((el, i) => el.textContent = translation.reasons[i].text);
-      
-      // Update location title
+            // Update location title
       document.querySelectorAll('.section-title')[2].textContent = translation.locationTitle;
       
       // Update about section
