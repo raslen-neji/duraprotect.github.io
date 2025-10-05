@@ -44,9 +44,9 @@ setTimeout(updateLoading, 500);
 function initPage() {
   animateText();
   animateStats();
-  initParticleBackground();
-  initScrollAnimations();
-  initNavScroll();
+  if (window.innerWidth > 600) {
+  initParticleBackground();}
+    initScrollAnimations();
   initLanguageSwitcher();
   
   // Add animation to logo after load
