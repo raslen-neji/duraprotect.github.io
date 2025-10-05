@@ -103,20 +103,15 @@
       </div>
     </div>
 
-    <!-- Contact Us Button -->
-    <button class="contact-us-btn" id="contactUsBtn">
-      <i class="fas fa-phone-alt"></i> Contactez-nous
-    </button>
 
     <div class="header-container">
       <h1 id="title"></h1>
       <small id="subtitle"></small>
     </div>
-
-    <!-- Floating Button -->
-    <div class="floating-btn-container">
-      <button class="floating-btn" id="whyBtn">Pourquoi<br>DuraProtect</button>
-    </div>
+    <!-- Contact Us Button -->
+    <button class="contact-us-btn" id="contactUsBtn">
+      <i class="fas fa-phone-alt"></i> Contactez-nous
+    </button>
 
     <!-- Engagements Section -->
     <div class="engagements-container">
@@ -151,7 +146,22 @@
     <!-- Contact Section -->
     <div class="engagements-container">
       <h2 class="section-title">Contactez-nous</h2>
+      
       <div class="contact-content">
+         <form class="contact-form animate-on-scroll" action="https://formsubmit.co/raslenneji00@gmail.com" method="POST">
+  <input type="hidden" name="_subject" value="New Message">
+  <input type="hidden" name="_template" value="table">
+  <input type="hidden" name="_captcha" value="false">
+  <input type="hidden" name="_url" value="https://raslen-neji.github.io/portfolio.github.io/">
+  <input type="hidden" name="_website" value="https://raslen-neji.github.io/portfolio.github.io/">
+  <input type="hidden" name="_homepage" value="https://raslen-neji.github.io/portfolio.github.io/">
+  <input type="hidden" name="_cache" value="false">
+
+  <input type="text" placeholder="Entrez votre nom" id="contactName" name="name" required>
+  <input type="email" placeholder="Entrez votre email" id="contactEmail" name="email" required>
+  <textarea placeholder="Entrez votre message" id="contactMessage" name="message" required></textarea>
+  <button class="submit-btn" type="submit">Envoyer</button>
+</form>
         <div class="contact-info animate-on-scroll">
           <div class="contact-method">
             <div class="contact-icon">
@@ -185,20 +195,7 @@
           </div>
 
         </div>
-       <form class="contact-form animate-on-scroll" action="https://formsubmit.co/raslenneji00@gmail.com" method="POST">
-  <input type="hidden" name="_subject" value="New Message">
-  <input type="hidden" name="_template" value="table">
-  <input type="hidden" name="_captcha" value="false">
-  <input type="hidden" name="_url" value="https://raslen-neji.github.io/portfolio.github.io/">
-  <input type="hidden" name="_website" value="https://raslen-neji.github.io/portfolio.github.io/">
-  <input type="hidden" name="_homepage" value="https://raslen-neji.github.io/portfolio.github.io/">
-  <input type="hidden" name="_cache" value="false">
-
-  <input type="text" placeholder="Entrez votre nom" id="contactName" name="name" required>
-  <input type="email" placeholder="Entrez votre email" id="contactEmail" name="email" required>
-  <textarea placeholder="Entrez votre message" id="contactMessage" name="message" required></textarea>
-  <button class="submit-btn" type="submit">Envoyer</button>
-</form>
+      
       </div>
     </div>
     
@@ -441,7 +438,7 @@
           </div>
           
           <div class="form-group">
-            <label for="cv">CV (PDF, max 2MB)</label>
+            <label for="cv">CV (max 5MB)</label>
             <input type="file" id="cv" name="file" required>
           </div>
           
