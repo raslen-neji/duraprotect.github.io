@@ -2813,13 +2813,5 @@ nav .language-btn.active {
   .mobile-menu-btn {
     display: flex;
   }
-  *{
-    animation: none !important;
-    text-shadow: none !important;
-    box-shadow: none    !important;
-    filter: none !important ;
-    backdrop-filter: none !important;
-    transition: none !important;
-    transform: none !important;
-    }
+  
   }
